@@ -1,6 +1,17 @@
-﻿namespace FleetManager.ViewModels;
+﻿using System.Collections.ObjectModel;
+using FleetManager.Models;
+using FleetManager.Services;
+
+namespace FleetManager.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase
 {
-    public string Greeting { get; } = "Welcome to Avalonia!";
+    public ObservableCollection<Vehicle> Vehicles { get; } = new();
+
+    private readonly IVehicleService _vehicleService;
+
+    public MainWindowViewModel(IVehicleService vehicleService)
+    {
+        _vehicleService = vehicleService;
+    }
 }
