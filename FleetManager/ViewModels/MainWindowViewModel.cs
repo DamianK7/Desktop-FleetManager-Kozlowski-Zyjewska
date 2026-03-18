@@ -22,6 +22,10 @@ public class MainWindowViewModel : ViewModelBase
         _vehicleService = vehicleService;
 
         Task.Run(async () => await LoadAsync());
+
+        RefuelCommand = ReactiveCommand.Create<Vehicle>(Refuel);
+        SendToRouteCommand = ReactiveCommand.Create<Vehicle>(SendToRoute);
+        SetServiceCommand = ReactiveCommand.Create<Vehicle>(SetService);
     }
 
 
