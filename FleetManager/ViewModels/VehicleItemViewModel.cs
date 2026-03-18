@@ -1,6 +1,8 @@
 // (ViewModel dla UserControl)
 
+using System;
 using System.Reactive;
+using System.Threading.Tasks;
 using FleetManager.Models;
 using ReactiveUI;
 
@@ -8,7 +10,9 @@ namespace FleetManager.ViewModels;
 
 public class VehicleItemViewModel : ViewModelBase
 {
-    public readonly Vehicle _vehicle;
+    private readonly Vehicle _vehicle;
+    public Vehicle Vehicle => _vehicle;
+    private readonly Func<Task> _save;
 
     public string Name => _vehicle.Name;
     public int Fuel => _vehicle.Fuel;
@@ -17,11 +21,11 @@ public class VehicleItemViewModel : ViewModelBase
     public ReactiveCommand<Unit, Unit> SendCommand { get; }
     public ReactiveCommand<Unit, Unit> RefuelCommand { get; }
 
-    public VehicleItemViewModel(Vehicle vehicle)
+    public VehicleItemViewModel(Vehicle vehicle, Func<Task> save)
     {
         _vehicle = vehicle;
+        _save = save;
 
-        // 🔥 TU dajesz WhenAnyValue
         var canSend = this.WhenAnyValue(
             _ => _vehicle.Fuel,
             _ => _vehicle.Status,
@@ -40,6 +44,7 @@ public class VehicleItemViewModel : ViewModelBase
     private void SendToRoute()
     {
         _vehicle.Status = VehicleStatus.InRoute;
+        _ = _save();
     }
 
     private void Refuel()
@@ -48,5 +53,6 @@ public class VehicleItemViewModel : ViewModelBase
             return;
 
         _vehicle.Fuel = 100;
+        _ = _save();
     }
 }

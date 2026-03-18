@@ -17,6 +17,7 @@ public class MainWindowViewModel : ViewModelBase
     
     public ReactiveCommand<Vehicle, Unit> RefuelCommand { get; }
     public ReactiveCommand<Vehicle, Unit> SetServiceCommand { get; }
+    public ReactiveCommand<Vehicle, Unit> SetAvailableCommand { get; }
 
     public MainWindowViewModel(IVehicleService vehicleService)
     {
@@ -26,24 +27,34 @@ public class MainWindowViewModel : ViewModelBase
 
         RefuelCommand = ReactiveCommand.Create<Vehicle>(Refuel);
         SetServiceCommand = ReactiveCommand.Create<Vehicle>(SetService);
+        SetAvailableCommand = ReactiveCommand.Create<Vehicle>(SetAvailable);
     }
 
 
     private async Task LoadAsync()
     {
-        var list = await _vehicleService.LoadAsync();
-        
-        Vehicles.Clear();
-        foreach (var v in list)
+        try
         {
-            Vehicles.Add(new VehicleItemViewModel(v));
+            var list = await _vehicleService.LoadAsync();
+
+            Vehicles.Clear();
+            foreach (var v in list)
+            {
+                Vehicles.Add(new VehicleItemViewModel(v, SaveAsync));
+            }
         }
+        catch
+        {
+            Vehicles.Clear();
+            Console.WriteLine("Brak danych - tryb awaryjny");
+        }
+        
     }
 
     private async Task SaveAsync()
     {
         var list = Vehicles
-            .Select(vm => vm._vehicle)
+            .Select(vm => vm.Vehicle)
             .ToList();
         await _vehicleService.SaveAsync(list);
     }
@@ -64,6 +75,12 @@ public class MainWindowViewModel : ViewModelBase
     private void SetService(Vehicle v)
     {
         v.Status = VehicleStatus.Service;
+        _ = SaveAsync();
+    }
+    
+    private void SetAvailable(Vehicle v)
+    {
+        v.Status = VehicleStatus.Available;
         _ = SaveAsync();
     }
 }
