@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
 using FleetManager.Models;
@@ -10,12 +11,11 @@ namespace FleetManager.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase
 {
-    public ObservableCollection<Vehicle> Vehicles { get; } = new();
+    public ObservableCollection<VehicleItemViewModel> Vehicles { get; } = new();
 
     private readonly IVehicleService _vehicleService;
     
     public ReactiveCommand<Vehicle, Unit> RefuelCommand { get; }
-    public ReactiveCommand<Vehicle, Unit> SendToRouteCommand { get; }
     public ReactiveCommand<Vehicle, Unit> SetServiceCommand { get; }
 
     public MainWindowViewModel(IVehicleService vehicleService)
@@ -25,7 +25,6 @@ public class MainWindowViewModel : ViewModelBase
         Task.Run(async () => await LoadAsync());
 
         RefuelCommand = ReactiveCommand.Create<Vehicle>(Refuel);
-        SendToRouteCommand = ReactiveCommand.Create<Vehicle>(SendToRoute);
         SetServiceCommand = ReactiveCommand.Create<Vehicle>(SetService);
     }
 
@@ -37,13 +36,16 @@ public class MainWindowViewModel : ViewModelBase
         Vehicles.Clear();
         foreach (var v in list)
         {
-            Vehicles.Add(v);
+            Vehicles.Add(new VehicleItemViewModel(v));
         }
     }
 
     private async Task SaveAsync()
     {
-        await _vehicleService.SaveAsync(Vehicles);
+        var list = Vehicles
+            .Select(vm => vm._vehicle)
+            .ToList();
+        await _vehicleService.SaveAsync(list);
     }
 
     private void Refuel(Vehicle v)
@@ -57,24 +59,7 @@ public class MainWindowViewModel : ViewModelBase
         v.Fuel = 100;
         _ = SaveAsync();
     }
-
-    private void SendToRoute(Vehicle v)
-    {
-        if (v.Fuel < 15 || v.Status == VehicleStatus.Service)
-        {
-            Console.WriteLine("Nie można wysłać w trasę");
-            return;
-        } if (v.Status == VehicleStatus.Service)
-        {
-            Console.WriteLine("Nie można wysłać w trasę");
-            return;
-        }
-            
-        
-        v.Status = VehicleStatus.InRoute;
-        
-        _ = SaveAsync();
-    }
+    
 
     private void SetService(Vehicle v)
     {
