@@ -1,0 +1,5 @@
+﻿[
+  { "Name": "Truck 1", "Fuel": 80, "Status": "Available" },
+  { "Name": "Truck 2", "Fuel": 50, "Status": "InRoute" },
+  { "Name": "Truck 3", "Fuel": 10, "Status": "Service" }
+]
