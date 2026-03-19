@@ -1,5 +1,5 @@
 ﻿[
-  { "Name": "Truck 1", "Fuel": 80, "Status": "Available" },
-  { "Name": "Truck 2", "Fuel": 50, "Status": "InRoute" },
-  { "Name": "Truck 3", "Fuel": 10, "Status": "Service" }
+  { "Name": "Truck 1", "RegistrationNumber": "WA 12345", "Fuel": 80, "Status": "Available" },
+  { "Name": "Truck 2", "RegistrationNumber": "KR 67890", "Fuel": 50, "Status": "InRoute" },
+  { "Name": "Truck 3", "RegistrationNumber": "GD 11223", "Fuel": 10, "Status": "Service" }
 ]

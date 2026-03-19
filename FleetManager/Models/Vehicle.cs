@@ -3,9 +3,10 @@ using ReactiveUI.Fody.Helpers;
 
 namespace FleetManager.Models;
 
-public class Vehicle
+public class Vehicle : ReactiveObject
 {
-    public string Name { get; set; } = "";
-    public int Fuel { get; set; }
-    public VehicleStatus Status { get; set; }
+    [Reactive] public string Name { get; set; } = "";
+    [Reactive] public string RegistrationNumber { get; set; } = "";
+    [Reactive] public int Fuel { get; set; }
+    [Reactive] public VehicleStatus Status { get; set; }
 }
